@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from db import db
 from ma import ma
-from blacklist import BLACKLIST
+from blocklist import BLOCKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
@@ -32,10 +32,10 @@ def handle_marshmallow_validation(err):
 jwt = JWTManager(app)
 
 
-# This method will check if a token is blacklisted, and will be called automatically when blacklist is enabled
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    return decrypted_token["jti"] in BLACKLIST
+# This method will check if a token is blocklisted, and will be called automatically when blocklist is enabled
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blocklist(jwt_header, jwt_payload):
+    return jwt_payload["jti"] in BLOCKLIST
 
 
 api.add_resource(Store, "/store/<string:name>")

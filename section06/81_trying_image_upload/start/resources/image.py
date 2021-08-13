@@ -12,7 +12,7 @@ image_schema = ImageSchema()
 
 
 class ImageUpload(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         """
         This endpoint is used to upload an image file. It uses the

@@ -6,7 +6,7 @@ import os
 
 from db import db
 from ma import ma
-from blacklist import BLACKLIST
+from blocklist import BLOCKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
@@ -17,11 +17,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
-app.config["JWT_BLACKLIST_ENABLED"] = True  # enable blacklist feature
-app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = [
-    "access",
-    "refresh",
-]  # allow blacklisting for access and refresh tokens
+
+
 app.config["JWT_SECRET_KEY"] = os.environ.get("APP_SECRET_KEY")
 # we can also use app.secret_key like before, Flask-JWT-Extended can recognize both
 
@@ -41,10 +38,10 @@ def handle_marshmallow_validation(err):
 jwt = JWTManager(app)
 
 
-# This method will check if a token is blacklisted, and will be called automatically when blacklist is enabled
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    return decrypted_token["jti"] in BLACKLIST
+# This method will check if a token is blocklisted, and will be called automatically when blocklist is enabled
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blocklist(jwt_header, jwt_payload):
+    return jwt_payload["jti"] in BLOCKLIST
 
 
 api.add_resource(Store, "/store/<string:name>")

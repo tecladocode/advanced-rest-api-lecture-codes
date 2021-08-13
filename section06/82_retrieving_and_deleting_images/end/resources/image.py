@@ -13,7 +13,7 @@ image_schema = ImageSchema()
 
 
 class ImageUpload(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         """
         This endpoint is used to upload an image file. It uses the
@@ -37,7 +37,7 @@ class ImageUpload(Resource):
 
 
 class Image(Resource):
-    @jwt_required
+    @jwt_required()
     def get(self, filename: str):
         """
         This endpoint returns the requested image if exists. It will use JWT to
@@ -54,7 +54,7 @@ class Image(Resource):
         except FileNotFoundError:
             return {"message": gettext("image_not_found").format(filename)}, 404
 
-    @jwt_required
+    @jwt_required()
     def delete(self, filename: str):
         """
         This endpoint is used to delete the requested image under the user's folder.

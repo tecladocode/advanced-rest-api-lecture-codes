@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
 from db import db
-from blacklist import BLACKLIST
+from blocklist import BLOCKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
@@ -12,11 +12,6 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
-app.config["JWT_BLACKLIST_ENABLED"] = True  # enable blacklist feature
-app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = [
-    "access",
-    "refresh",
-]  # allow blacklisting for access and refresh tokens
 app.secret_key = "jose"  # could do app.config['JWT_SECRET_KEY'] if we prefer
 api = Api(app)
 
@@ -29,7 +24,7 @@ def create_tables():
 jwt = JWTManager(app)
 
 
-@jwt.user_claims_loader
+@jwt.additional_claims_loader
 def add_claims_to_jwt(
     identity
 ):  # Remember identity is what we define when creating the access token
@@ -40,18 +35,18 @@ def add_claims_to_jwt(
     return {"is_admin": False}
 
 
-# This method will check if a token is blacklisted, and will be called automatically when blacklist is enabled
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
+# This method will check if a token is blocklisted, and will be called automatically when blocklist is enabled
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return (
-        decrypted_token["jti"] in BLACKLIST
-    )  # Here we blacklist particular JWTs that have been created in the past.
+        jwt_payload["jti"] in BLOCKLIST
+    )  # Here we blocklist particular JWTs that have been created in the past.
 
 
 # The following callbacks are used for customizing jwt response/error messages.
 # The original ones may not be in a very pretty format (opinionated)
 @jwt.expired_token_loader
-def expired_token_callback():
+def expired_token_callback(jwt_header, jwt_payload):
     return jsonify({"message": "The token has expired.", "error": "token_expired"}), 401
 
 
@@ -81,7 +76,7 @@ def missing_token_callback(error):
 
 
 @jwt.needs_fresh_token_loader
-def token_not_fresh_callback():
+def token_not_fresh_callback(jwt_header, jwt_payload):
     return (
         jsonify(
             {"description": "The token is not fresh.", "error": "fresh_token_required"}
@@ -91,7 +86,7 @@ def token_not_fresh_callback():
 
 
 @jwt.revoked_token_loader
-def revoked_token_callback():
+def revoked_token_callback(jwt_header, jwt_payload):
     return (
         jsonify(
             {"description": "The token has been revoked.", "error": "token_revoked"}

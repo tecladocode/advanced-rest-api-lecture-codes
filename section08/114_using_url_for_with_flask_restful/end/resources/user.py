@@ -4,7 +4,6 @@ from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    fresh_jwt_required
 )
 from libs.strings import gettext
 from models.user import UserModel
@@ -69,7 +68,7 @@ class UserLogin(Resource):
 
 class SetPassword(Resource):
     @classmethod
-    @fresh_jwt_required
+    @jwt_required(fresh=True)
     def post(cls):
         user_json = request.get_json()
         user_data = user_schema.load(user_json)

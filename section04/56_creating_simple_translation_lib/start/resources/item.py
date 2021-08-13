@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import request
-from flask_jwt_extended import jwt_required, fresh_jwt_required
+from flask_jwt_extended import jwt_required
 from models.item import ItemModel
 from schemas.item import ItemSchema
 
@@ -23,7 +23,7 @@ class Item(Resource):
         return {"message": ITEM_NOT_FOUND}, 404
 
     @classmethod
-    @fresh_jwt_required
+    @jwt_required(fresh=True)
     def post(cls, name: str):
         if ItemModel.find_by_name(name):
             return {"message": NAME_ALREADY_EXISTS.format(name)}, 400
@@ -41,7 +41,7 @@ class Item(Resource):
         return item_schema.dump(item), 201
 
     @classmethod
-    @jwt_required
+    @jwt_required()
     def delete(cls, name: str):
         item = ItemModel.find_by_name(name)
         if item:

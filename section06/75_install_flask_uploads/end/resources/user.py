@@ -4,16 +4,15 @@ from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    jwt_refresh_token_required,
     get_jwt_identity,
     jwt_required,
-    get_raw_jwt,
+    get_jwt,
 )
 import traceback
 from models.user import UserModel
 from schemas.user import UserSchema
 from models.confirmation import ConfirmationModel
-from blacklist import BLACKLIST
+from blocklist import BLOCKLIST
 from libs.mailgun import MailGunException
 from libs.strings import gettext
 
@@ -96,17 +95,17 @@ class UserLogin(Resource):
 
 class UserLogout(Resource):
     @classmethod
-    @jwt_required
+    @jwt_required()
     def post(cls):
-        jti = get_raw_jwt()["jti"]  # jti is "JWT ID", a unique identifier for a JWT.
+        jti = get_jwt()["jti"]  # jti is "JWT ID", a unique identifier for a JWT.
         user_id = get_jwt_identity()
-        BLACKLIST.add(jti)
+        BLOCKLIST.add(jti)
         return {"message": gettext("user_logged_out").format(user_id)}, 200
 
 
 class TokenRefresh(Resource):
     @classmethod
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(cls):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
