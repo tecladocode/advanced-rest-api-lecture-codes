@@ -11,7 +11,7 @@ class ItemModel(db.Model):
     price = db.Column(db.Float(precision=2))
 
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"))
-    store = db.relationship("StoreModel")
+    store = db.relationship("StoreModel", back_populates="items")
 
     def __init__(self, name: str, price: float, store_id: int):
         self.name = name

@@ -11,7 +11,7 @@ class ItemModel(db.Model):
     price = db.Column(db.Float(precision=2), nullable=False)
 
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=False)
-    store = db.relationship("StoreModel")
+    store = db.relationship("StoreModel", back_populates="items")
 
     @classmethod
     def find_by_name(cls, name: str) -> "ItemModel":
