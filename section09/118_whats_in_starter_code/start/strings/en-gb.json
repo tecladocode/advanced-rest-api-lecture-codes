@@ -1,0 +1,18 @@
+{
+  "item_name_exists": "An item with name '{}' already exists.",
+  "item_error_inserting": "An error occurred while inserting the item.",
+  "item_not_found": "An item <id={}> in this order cannot be found.",
+  "item_deleted": "Item deleted.",
+
+  "store_name_exists": "A store with name '{}' already exists.",
+  "store_error_inserting": "An error occurred while inserting the store.",
+  "store_not_found": "Store not found.",
+  "store_deleted": "Store deleted.",
+
+  "user_username_exists": "A user with that username already exists.",
+  "user_not_found": "User not found.",
+  "user_deleted": "User deleted.",
+  "user_invalid_credentials": "Invalid credentials!",
+  "user_logged_out": "User <id={}> successfully logged out.",
+  "user_registered": "Account created successfully."
+}
