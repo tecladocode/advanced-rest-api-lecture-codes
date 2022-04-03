@@ -1,7 +1,7 @@
 import traceback
 from flask_restful import Resource
 from flask import request
-from werkzeug.security import safe_str_cmp
+from hmac import compare_digest
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -85,7 +85,7 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_username(user_data.username)
 
-        if user and safe_str_cmp(user_data.password, user.password):
+        if user and compare_digest(user_data.password, user.password):
             confirmation = user.most_recent_confirmation
             if confirmation and confirmation.confirmed:
                 access_token = create_access_token(identity=user.id, fresh=True)
