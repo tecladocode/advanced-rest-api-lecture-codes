@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from hmac import compare_digest
 from flask_jwt_extended import (
+    jwt_required,
     create_access_token,
     create_refresh_token,
 )
