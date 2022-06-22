@@ -9,6 +9,6 @@ class StoreSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = StoreModel
-		load_instance = True
+        load_instance = True
         dump_only = ("id",)
         include_fk = True
